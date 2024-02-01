@@ -30,8 +30,8 @@ const BarbershopItem = ({ barbershop }: IBarberShopItem) => {
         </div>
 
         <div className="px-2 pb-3">
-          <h2 className="mt-2 font-bold overflow-hidden text-ellipsis text-nowrap">{barbershop.name}</h2>
-          <p className="text-sm text-gray-400 overflow-hidden text-ellipsis text-nowrap">{barbershop.address}</p>
+          <h2 className="mt-2 font-bold overflow-hidden text-ellipsis text-nowrap whitespace-pre">{barbershop.name}</h2>
+          <p className="text-sm text-gray-400 overflow-hidden text-ellipsis text-nowrap whitespace-pre">{barbershop.address}</p>
           <Button className="mt-3 w-full" variant="secondary">
             Reservar
           </Button>
