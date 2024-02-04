@@ -2,16 +2,17 @@
 import Image from "next/image";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { LogInIcon, LogOutIcon, MenuIcon, UserIcon } from "lucide-react";
+import { Calendar, HomeIcon, LogInIcon, LogOutIcon, MenuIcon, UserIcon } from "lucide-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { Avatar } from "./ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
+import Link from "next/link";
 
 const Header = () => {
   const { data } = useSession();
   const handleLoginClick = async () => {
-    await signIn();
+    await signIn('google');
   }
 
   const handleLogoutClick = () => signOut();
@@ -57,6 +58,24 @@ const Header = () => {
                 </Button>
               </div>
             )}
+
+            <div className="flex flex-col gap-3 px-5">
+              <Button variant="outline" className="justify-start" asChild>
+                <Link href="/">
+                  <HomeIcon size={18} className="mr-2" />
+                  Início
+                </Link>
+              </Button>
+
+              {data?.user && (
+                <Button variant="outline" className="justify-start" asChild>
+                  <Link href="/bookings">
+                    <Calendar size={18} className="mr-2" />
+                    Agendamentos
+                  </Link>
+                </Button>
+              )}
+            </div>
           </SheetContent>
         </Sheet>
       </CardContent>
