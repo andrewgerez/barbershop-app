@@ -1,13 +1,24 @@
+"use client";
 import { Button } from "@/app/_components/ui/button";
 import { Card, CardContent } from "@/app/_components/ui/card";
 import { ServiceType } from "@/app/types";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 
 interface IServiceItem {
   service: ServiceType;
+  isAuthenticated: boolean;
 }
 
-const ServiceItem = ({ service }: IServiceItem) => {
+const ServiceItem = ({ service, isAuthenticated }: IServiceItem) => {
+  const handleBookingClick = () => {
+    if (!isAuthenticated) {
+      return signIn("google");
+    }
+
+    // TODO: open booking modal.
+  }
+
   const priceFormatted = new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
@@ -32,7 +43,7 @@ const ServiceItem = ({ service }: IServiceItem) => {
 
             <div className="flex items-center justify-between mt-3">
               <h2 className="text-primary text-sm font-bold">{priceFormatted}</h2>
-              <Button variant="secondary">Reservar</Button>
+              <Button variant="secondary" onClick={handleBookingClick}>Reservar</Button>
             </div>
           </div>
         </div>
