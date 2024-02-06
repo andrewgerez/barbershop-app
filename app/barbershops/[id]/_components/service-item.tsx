@@ -7,7 +7,8 @@ import { ServiceType } from "@/app/types";
 import { ptBR } from "date-fns/locale";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { generateDayTimeList } from "../_helpers/hours";
 
 interface IServiceItem {
   service: ServiceType;
@@ -15,13 +16,13 @@ interface IServiceItem {
 }
 
 const ServiceItem = ({ service, isAuthenticated }: IServiceItem) => {
-  const [date, setDate] = useState<Date | undefined>(new Date())
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [hour, setHour] = useState<string | undefined>();
 
   const handleBookingClick = () => {
     if (!isAuthenticated) {
       return signIn("google");
     }
-
     // TODO: open booking modal.
   }
 
@@ -29,6 +30,19 @@ const ServiceItem = ({ service, isAuthenticated }: IServiceItem) => {
     style: "currency",
     currency: "BRL",
   }).format(service.price);
+
+  const timeList = useMemo(() => {
+    return date ? generateDayTimeList(date) : [];
+  }, [date]);
+
+  const handleDateClick = (date: Date | undefined) => {
+    setDate(date);
+    setHour(undefined);
+  }
+
+  const handleHourClick = (time: string) => {
+    setHour(time);
+  }
 
   return (
     <Card>
@@ -62,7 +76,7 @@ const ServiceItem = ({ service, isAuthenticated }: IServiceItem) => {
                   <Calendar
                     mode="single"
                     selected={date}
-                    onSelect={setDate}
+                    onSelect={handleDateClick}
                     className="mt-6"
                     fromDate={new Date()}
                     locale={ptBR}
@@ -90,6 +104,21 @@ const ServiceItem = ({ service, isAuthenticated }: IServiceItem) => {
                       },
                     }}
                   />
+                  {date && (
+                    <div className="flex overflow-scroll py-6 px-5 gap-3 border-y border-solid border-secondary [&::-webkit-scrollbar]:hidden">
+                      {timeList.map((time) => (
+                        <Button
+                          key={time}
+                          size="sm"
+                          variant={hour === time ? "default" : "outline"}
+                          className="rounded-full"
+                          onClick={() => handleHourClick(time)}
+                        >
+                          {time}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
                 </SheetContent>
               </Sheet>
             </div>
