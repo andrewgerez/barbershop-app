@@ -2,21 +2,24 @@
 import { Button } from "@/app/_components/ui/button";
 import { Calendar } from "@/app/_components/ui/calendar";
 import { Card, CardContent } from "@/app/_components/ui/card";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
-import { ServiceType } from "@/app/types";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
+import { BarbershopType, ServiceType } from "@/app/types";
 import { ptBR } from "date-fns/locale";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { generateDayTimeList } from "../_helpers/hours";
+import { priceFormatted } from "../_helpers/price";
+import { format } from "date-fns";
 
 interface IServiceItem {
+  barbershop: BarbershopType;
   service: ServiceType;
   isAuthenticated: boolean;
 }
 
-const ServiceItem = ({ service, isAuthenticated }: IServiceItem) => {
-  const [date, setDate] = useState<Date | undefined>(new Date());
+const ServiceItem = ({ barbershop, service, isAuthenticated }: IServiceItem) => {
+  const [date, setDate] = useState<Date | undefined>(undefined);
   const [hour, setHour] = useState<string | undefined>();
 
   const handleBookingClick = () => {
@@ -25,11 +28,6 @@ const ServiceItem = ({ service, isAuthenticated }: IServiceItem) => {
     }
     // TODO: open booking modal.
   }
-
-  const priceFormatted = new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(service.price);
 
   const timeList = useMemo(() => {
     return date ? generateDayTimeList(date) : [];
@@ -62,7 +60,7 @@ const ServiceItem = ({ service, isAuthenticated }: IServiceItem) => {
             <p className="text-sm text-gray-400 font-light">{service.description}</p>
 
             <div className="flex items-center justify-between mt-3">
-              <p className="text-primary text-sm font-bold">{priceFormatted}</p>
+              <p className="text-primary text-sm font-bold">{priceFormatted(service.price)}</p>
               <Sheet>
                 <SheetTrigger asChild>
                   <Button variant="secondary" onClick={handleBookingClick}>Reservar</Button>
@@ -73,39 +71,41 @@ const ServiceItem = ({ service, isAuthenticated }: IServiceItem) => {
                     <SheetTitle>Fazer reserva</SheetTitle>
                   </SheetHeader>
 
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={handleDateClick}
-                    className="mt-6"
-                    fromDate={new Date()}
-                    locale={ptBR}
-                    styles={{
-                      head_cell: {
-                        width: "100%",
-                        textTransform: "capitalize",
-                      },
-                      cell: {
-                        width: "100%",
-                      },
-                      button: {
-                        width: "100%",
-                      },
-                      nav_button_previous: {
-                        width: "2rem",
-                        height: "2rem",
-                      },
-                      nav_button_next: {
-                        width: "2rem",
-                        height: "2rem",
-                      },
-                      caption: {
-                        textTransform: "capitalize",
-                      },
-                    }}
-                  />
+                  <div className="py-6">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={handleDateClick}
+                      fromDate={new Date()}
+                      locale={ptBR}
+                      styles={{
+                        head_cell: {
+                          width: "100%",
+                          textTransform: "capitalize",
+                        },
+                        cell: {
+                          width: "100%",
+                        },
+                        button: {
+                          width: "100%",
+                        },
+                        nav_button_previous: {
+                          width: "2rem",
+                          height: "2rem",
+                        },
+                        nav_button_next: {
+                          width: "2rem",
+                          height: "2rem",
+                        },
+                        caption: {
+                          textTransform: "capitalize",
+                        },
+                      }}
+                    />
+                  </div>
+
                   {date && (
-                    <div className="flex overflow-scroll py-6 px-5 gap-3 border-y border-solid border-secondary [&::-webkit-scrollbar]:hidden">
+                    <div className="flex overflow-scroll py-6 px-5 gap-3 border-t border-solid border-secondary [&::-webkit-scrollbar]:hidden">
                       {timeList.map((time) => (
                         <Button
                           key={time}
@@ -119,6 +119,42 @@ const ServiceItem = ({ service, isAuthenticated }: IServiceItem) => {
                       ))}
                     </div>
                   )}
+
+                  <div className="py-6 px-5 border-t border-solid border-secondary">
+                    <Card>
+                      <CardContent className="flex flex-col p-3 gap-3">
+                        <div className="flex justify-between">
+                          <h2 className="font-bold">{service.name}</h2>
+                          <h3 className="font-bold text-sm">{priceFormatted(service.price)}</h3>
+                        </div>
+
+                        {date && (
+                          <div className="flex justify-between">
+                            <h3 className="text-sm text-gray-400">Data</h3>
+                            <h4 className="text-sm">
+                              {format(date, "dd 'de' MMMM", { locale: ptBR })}
+                            </h4>
+                          </div>
+                        )}
+
+
+                        {hour && (
+                          <div className="flex justify-between">
+                            <h3 className="text-sm text-gray-400">Horário</h3>
+                            <h4 className="text-sm">{hour}</h4>
+                          </div>
+                        )}
+
+                        <div className="flex justify-between">
+                          <h3 className="text-sm text-gray-400">Barbearia</h3>
+                          <h4 className="text-sm">{barbershop.name}</h4>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                  <SheetFooter className="px-5">
+                    <Button>Confirmar reserva</Button>
+                  </SheetFooter>
                 </SheetContent>
               </Sheet>
             </div>

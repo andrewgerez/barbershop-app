@@ -37,7 +37,12 @@ const BarbershopDetailsPage = async ({ params }: IBarbershopDetailsPage) => {
       <BarbershopInfo barbershop={barbershop} />
       <div className="px-5 py-6 flex flex-col gap-4">
         {barbershop.services.map((service: ServiceType) => (
-          <ServiceItem key={service.id} service={service} isAuthenticated={!!session?.user} />
+          <ServiceItem
+            key={service.id}
+            barbershop={barbershop}
+            service={service}
+            isAuthenticated={!!session?.user}
+          />
         ))}
       </div>
     </div>
