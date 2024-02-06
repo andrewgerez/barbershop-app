@@ -14,6 +14,8 @@ import { format, setHours, setMinutes } from "date-fns";
 import { saveBooking } from "../_actions/save-booking";
 import { DefaultUser, Session } from "next-auth";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface IServiceItem {
   barbershop: BarbershopType;
@@ -26,7 +28,9 @@ const ServiceItem = ({ barbershop, service, session, isAuthenticated }: IService
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [hour, setHour] = useState<string | undefined>();
   const [isFetching, setIsFetching] = useState(false);
+  const [sheetIsOpen, setSheetIsOpen] = useState(false);
   const userId = (session?.user as DefaultUser)?.id;
+  const router = useRouter();
 
   const handleBookingClick = () => {
     if (!isAuthenticated) {
@@ -64,6 +68,17 @@ const ServiceItem = ({ barbershop, service, session, isAuthenticated }: IService
         date: newDate,
         userId,
       });
+
+      setSheetIsOpen(false);
+      setHour(undefined);
+      setDate(undefined);
+      toast("Reserva realizada com sucesso!", {
+        description: format(newDate, "'Para' dd 'de' MMMM 'às' HH':'mm'.", { locale: ptBR }),
+        action: {
+          label: "Visualizar",
+          onClick: () => router.push("/bookings"),
+        },
+      });
     } catch (error) {
       console.log(error);
     } finally {
@@ -90,7 +105,7 @@ const ServiceItem = ({ barbershop, service, session, isAuthenticated }: IService
 
             <div className="flex items-center justify-between mt-3">
               <p className="text-primary text-sm font-bold">{priceFormatted(service.price)}</p>
-              <Sheet>
+              <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
                 <SheetTrigger asChild>
                   <Button variant="secondary" onClick={handleBookingClick}>Reservar</Button>
                 </SheetTrigger>
