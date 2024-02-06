@@ -153,7 +153,7 @@ const ServiceItem = ({ barbershop, service, isAuthenticated }: IServiceItem) => 
                     </Card>
                   </div>
                   <SheetFooter className="px-5">
-                    <Button>Confirmar reserva</Button>
+                    <Button disabled={!date || !hour}>Confirmar reserva</Button>
                   </SheetFooter>
                 </SheetContent>
               </Sheet>
