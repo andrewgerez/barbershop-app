@@ -10,17 +10,23 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { generateDayTimeList } from "../_helpers/hours";
 import { priceFormatted } from "../_helpers/price";
-import { format } from "date-fns";
+import { format, setHours, setMinutes } from "date-fns";
+import { saveBooking } from "../_actions/save-booking";
+import { DefaultUser, Session } from "next-auth";
+import { Loader2 } from "lucide-react";
 
 interface IServiceItem {
   barbershop: BarbershopType;
   service: ServiceType;
+  session: Session | null;
   isAuthenticated: boolean;
 }
 
-const ServiceItem = ({ barbershop, service, isAuthenticated }: IServiceItem) => {
+const ServiceItem = ({ barbershop, service, session, isAuthenticated }: IServiceItem) => {
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [hour, setHour] = useState<string | undefined>();
+  const [isFetching, setIsFetching] = useState(false);
+  const userId = (session?.user as DefaultUser)?.id;
 
   const handleBookingClick = () => {
     if (!isAuthenticated) {
@@ -40,6 +46,29 @@ const ServiceItem = ({ barbershop, service, isAuthenticated }: IServiceItem) => 
 
   const handleHourClick = (time: string) => {
     setHour(time);
+  }
+
+  const handleBookingSubmit = async () => {
+    setIsFetching(true);
+    try {
+      if (!date || !hour || !session?.user) return;
+
+      const dateHour = Number(hour.split(':')[0]);
+      const dateMinutes = Number(hour.split(':')[1]);
+
+      const newDate = setMinutes( setHours(date, dateHour), dateMinutes);
+
+      await saveBooking({
+        barbershopId: barbershop.id,
+        serviceId: service.id,
+        date: newDate,
+        userId,
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsFetching(false);
+    }
   }
 
   return (
@@ -153,7 +182,10 @@ const ServiceItem = ({ barbershop, service, isAuthenticated }: IServiceItem) => 
                     </Card>
                   </div>
                   <SheetFooter className="px-5">
-                    <Button disabled={!date || !hour}>Confirmar reserva</Button>
+                    <Button onClick={handleBookingSubmit} disabled={!date || !hour || isFetching}>
+                      {isFetching && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Confirmar reserva
+                    </Button>
                   </SheetFooter>
                 </SheetContent>
               </Sheet>
