@@ -3,11 +3,11 @@ import { Button } from "@/app/_components/ui/button";
 import { Calendar } from "@/app/_components/ui/calendar";
 import { Card, CardContent } from "@/app/_components/ui/card";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
-import { BarbershopType, ServiceType } from "@/app/types";
+import { BarbershopType, BookingType, ServiceType } from "@/app/types";
 import { ptBR } from "date-fns/locale";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { generateDayTimeList } from "../_helpers/hours";
 import { priceFormatted } from "../_helpers/price";
 import { format, setHours, setMinutes } from "date-fns";
@@ -16,6 +16,7 @@ import { DefaultUser, Session } from "next-auth";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { getDayBookings } from "../_actions/get-day-bookings";
 
 interface IServiceItem {
   barbershop: BarbershopType;
@@ -29,6 +30,7 @@ const ServiceItem = ({ barbershop, service, session, isAuthenticated }: IService
   const [hour, setHour] = useState<string | undefined>();
   const [isFetching, setIsFetching] = useState(false);
   const [sheetIsOpen, setSheetIsOpen] = useState(false);
+  const [dayBookings, setDayBookings] = useState<BookingType[]>([]);
   const userId = (session?.user as DefaultUser)?.id;
   const router = useRouter();
 
@@ -40,8 +42,24 @@ const ServiceItem = ({ barbershop, service, session, isAuthenticated }: IService
   }
 
   const timeList = useMemo(() => {
-    return date ? generateDayTimeList(date) : [];
-  }, [date]);
+    if (!date) return [];
+
+    return generateDayTimeList(date).filter(time => {
+      const timeHour = Number(time.split(':')[0]);
+      const timeMinutes = Number(time.split(':')[1]);
+
+      const booking = dayBookings.find(booking => {
+        const bookingHour = Number(booking.date.getHours());  
+        const bookingMinutes = Number(booking.date.getMinutes());
+
+        return bookingHour === timeHour && bookingMinutes === timeMinutes;
+      });
+
+      if (!booking) return true;
+
+      return false;
+    })
+  }, [date, dayBookings]);
 
   const handleDateClick = (date: Date | undefined) => {
     setDate(date);
@@ -85,6 +103,18 @@ const ServiceItem = ({ barbershop, service, session, isAuthenticated }: IService
       setIsFetching(false);
     }
   }
+
+  useEffect(() => {
+    if (!date) return;
+
+    const refreshAvailableHours = async () => {
+      const bookings = await getDayBookings(barbershop.id, date);
+
+      setDayBookings(bookings);
+    }
+
+    refreshAvailableHours();
+  }, [date, barbershop.id]);
 
   return (
     <Card>
