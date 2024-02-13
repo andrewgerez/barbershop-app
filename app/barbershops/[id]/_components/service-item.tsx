@@ -31,7 +31,6 @@ const ServiceItem = ({ barbershop, service, session, isAuthenticated }: IService
   const [isFetching, setIsFetching] = useState(false)
   const [sheetIsOpen, setSheetIsOpen] = useState(false)
   const [dayBookings, setDayBookings] = useState<BookingType[]>([])
-  const userId = (session?.user as DefaultUser)?.id
   const router = useRouter()
 
   const handleBookingClick = () => {
@@ -83,7 +82,7 @@ const ServiceItem = ({ barbershop, service, session, isAuthenticated }: IService
         barbershopId: barbershop.id,
         serviceId: service.id,
         date: newDate,
-        userId,
+        userId: (session?.user as DefaultUser)?.id,
       })
 
       setSheetIsOpen(false)
