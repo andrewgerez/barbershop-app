@@ -1,8 +1,8 @@
-import NextAuth, { AuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
+import NextAuth, { AuthOptions } from "next-auth"
+import GoogleProvider from "next-auth/providers/google"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import { db } from "@/app/_lib/prisma";
-import { Adapter } from "next-auth/adapters";
+import { db } from "@/app/_lib/prisma"
+import { Adapter } from "next-auth/adapters"
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(db) as Adapter,
@@ -15,12 +15,12 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async session({ session, user }) {
       session.user = { ...session.user, id: user.id } as {
-        id: string;
-        name: string;
-        email: string;
+        id: string
+        name: string
+        email: string
       }
 
-      return session;
+      return session
     },
   },
   jwt: {
@@ -28,6 +28,6 @@ export const authOptions: AuthOptions = {
   },
 }
 
-const handler = NextAuth(authOptions);
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }

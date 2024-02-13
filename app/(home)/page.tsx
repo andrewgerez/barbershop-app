@@ -1,18 +1,18 @@
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import Header from "../_components/header";
-import Search from "./_components/search";
-import BookingItem from "../_components/booking-item";
-import { db } from "../_lib/prisma";
-import BarbershopItem from "./_components/barbershop-item";
-import { BarbershopType } from "../types";
+import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
+import Header from "../_components/header"
+import Search from "./_components/search"
+import BookingItem from "../_components/booking-item"
+import { db } from "../_lib/prisma"
+import BarbershopItem from "./_components/barbershop-item"
+import { BarbershopType } from "../types"
 
 export default async function Home() {
-  const barbershops: BarbershopType[] = await db.barbershop.findMany({});
+  const barbershops: BarbershopType[] = await db.barbershop.findMany({})
 
   const currentDate = format(new Date(), "EEEE',' dd 'de' MMMM", {
     locale: ptBR,
-  });
+  })
 
   return (
     <div>
@@ -29,7 +29,7 @@ export default async function Home() {
 
       <div className="px-5 mt-6">
         <h2 className="mb-3 text-xs uppercase text-gray-400 font-bold">Agendamentos</h2>
-        <BookingItem />
+        {/* <BookingItem /> */}
       </div>
 
       <div className="mt-6">
@@ -52,5 +52,5 @@ export default async function Home() {
         </div>
       </div>
     </div>
-  );
+  )
 }

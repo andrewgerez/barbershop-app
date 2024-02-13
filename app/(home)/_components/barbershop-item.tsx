@@ -1,22 +1,22 @@
 "use client"
 
-import { Badge } from "@/app/_components/ui/badge";
-import { Button } from "@/app/_components/ui/button";
-import { Card, CardContent } from "@/app/_components/ui/card";
-import { Barbershop } from "@prisma/client";
-import { StarIcon } from "lucide-react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { Badge } from "@/app/_components/ui/badge"
+import { Button } from "@/app/_components/ui/button"
+import { Card, CardContent } from "@/app/_components/ui/card"
+import { Barbershop } from "@prisma/client"
+import { StarIcon } from "lucide-react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 interface IBarberShopItem {
   barbershop: Barbershop;
 }
 
 const BarbershopItem = ({ barbershop }: IBarberShopItem) => {
-  const router = useRouter();
+  const router = useRouter()
 
   const handleBookingClick = () => {
-    router.push(`/barbershops/${barbershop.id}`);
+    router.push(`/barbershops/${barbershop.id}`)
   }
 
   return (
@@ -47,7 +47,7 @@ const BarbershopItem = ({ barbershop }: IBarberShopItem) => {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
-export default BarbershopItem;
+export default BarbershopItem

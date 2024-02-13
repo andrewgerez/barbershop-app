@@ -5,7 +5,7 @@ const Footer = () => {
         © 2024 Copyright BarberShop
       </p>
     </div>
-  );
+  )
 }
 
-export default Footer;
+export default Footer

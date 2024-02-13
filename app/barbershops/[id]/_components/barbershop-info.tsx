@@ -1,22 +1,22 @@
-"use client";
+"use client"
 
-import SideMenu from "@/app/_components/side-menu";
-import { Button } from "@/app/_components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/app/_components/ui/sheet";
-import { BarbershopType } from "@/app/types";
-import { ChevronLeftIcon, MapPinIcon, MenuIcon, StarIcon } from "lucide-react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import SideMenu from "@/app/_components/side-menu"
+import { Button } from "@/app/_components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/app/_components/ui/sheet"
+import { BarbershopType } from "@/app/types"
+import { ChevronLeftIcon, MapPinIcon, MenuIcon, StarIcon } from "lucide-react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 interface IBarbershopInfo {
   barbershop: BarbershopType;
 }
 
 const BarbershopInfo = ({ barbershop }: IBarbershopInfo) => {
-  const router = useRouter();
+  const router = useRouter()
 
   const handleBackClick = () => {
-    router.replace("/");
+    router.replace("/")
   }
 
   return (
@@ -70,7 +70,7 @@ const BarbershopInfo = ({ barbershop }: IBarbershopInfo) => {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default BarbershopInfo;
+export default BarbershopInfo

@@ -1,18 +1,18 @@
-"use client";
-import { LogInIcon, LogOutIcon, MenuIcon, UserIcon, HomeIcon, Calendar } from "lucide-react";
-import { Button } from "./ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
-import { signIn, signOut, useSession } from "next-auth/react";
-import { Avatar, AvatarImage } from "./ui/avatar";
-import Link from "next/link";
+"use client"
+import { LogInIcon, LogOutIcon, UserIcon, HomeIcon, Calendar } from "lucide-react"
+import { Button } from "./ui/button"
+import { SheetHeader, SheetTitle } from "./ui/sheet"
+import { signIn, signOut, useSession } from "next-auth/react"
+import { Avatar, AvatarImage } from "./ui/avatar"
+import Link from "next/link"
 
 const SideMenu = () => {
-  const { data } = useSession();
+  const { data } = useSession()
   const handleLoginClick = async () => {
-    await signIn('google');
+    await signIn('google')
   }
 
-  const handleLogoutClick = () => signOut();
+  const handleLogoutClick = () => signOut()
 
   return (
     <>
@@ -66,7 +66,7 @@ const SideMenu = () => {
         )}
       </div>
     </>
-  );
+  )
 }
 
-export default SideMenu;
+export default SideMenu

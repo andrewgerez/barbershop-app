@@ -1,22 +1,22 @@
-"use client";
-import { Button } from "@/app/_components/ui/button";
-import { Calendar } from "@/app/_components/ui/calendar";
-import { Card, CardContent } from "@/app/_components/ui/card";
-import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
-import { BarbershopType, BookingType, ServiceType } from "@/app/types";
-import { ptBR } from "date-fns/locale";
-import { signIn } from "next-auth/react";
-import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
-import { generateDayTimeList } from "../_helpers/hours";
-import { priceFormatted } from "../_helpers/price";
-import { format, setHours, setMinutes } from "date-fns";
-import { saveBooking } from "../_actions/save-booking";
-import { DefaultUser, Session } from "next-auth";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { getDayBookings } from "../_actions/get-day-bookings";
+"use client"
+import { Button } from "@/app/_components/ui/button"
+import { Calendar } from "@/app/_components/ui/calendar"
+import { Card, CardContent } from "@/app/_components/ui/card"
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet"
+import { BarbershopType, BookingType, ServiceType } from "@/app/types"
+import { ptBR } from "date-fns/locale"
+import { signIn } from "next-auth/react"
+import Image from "next/image"
+import { useEffect, useMemo, useState } from "react"
+import { generateDayTimeList } from "../_helpers/hours"
+import { priceFormatted } from "../_helpers/price"
+import { format, setHours, setMinutes } from "date-fns"
+import { saveBooking } from "../_actions/save-booking"
+import { DefaultUser, Session } from "next-auth"
+import { Loader2 } from "lucide-react"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
+import { getDayBookings } from "../_actions/get-day-bookings"
 
 interface IServiceItem {
   barbershop: BarbershopType;
@@ -26,95 +26,94 @@ interface IServiceItem {
 }
 
 const ServiceItem = ({ barbershop, service, session, isAuthenticated }: IServiceItem) => {
-  const [date, setDate] = useState<Date | undefined>(undefined);
-  const [hour, setHour] = useState<string | undefined>();
-  const [isFetching, setIsFetching] = useState(false);
-  const [sheetIsOpen, setSheetIsOpen] = useState(false);
-  const [dayBookings, setDayBookings] = useState<BookingType[]>([]);
-  const userId = (session?.user as DefaultUser)?.id;
-  const router = useRouter();
+  const [date, setDate] = useState<Date | undefined>(undefined)
+  const [hour, setHour] = useState<string | undefined>()
+  const [isFetching, setIsFetching] = useState(false)
+  const [sheetIsOpen, setSheetIsOpen] = useState(false)
+  const [dayBookings, setDayBookings] = useState<BookingType[]>([])
+  const userId = (session?.user as DefaultUser)?.id
+  const router = useRouter()
 
   const handleBookingClick = () => {
     if (!isAuthenticated) {
-      return signIn("google");
+      return signIn("google")
     }
-    // TODO: open booking modal.
   }
 
   const timeList = useMemo(() => {
-    if (!date) return [];
+    if (!date) return []
 
     return generateDayTimeList(date).filter(time => {
-      const timeHour = Number(time.split(':')[0]);
-      const timeMinutes = Number(time.split(':')[1]);
+      const timeHour = Number(time.split(':')[0])
+      const timeMinutes = Number(time.split(':')[1])
 
       const booking = dayBookings.find(booking => {
-        const bookingHour = Number(booking.date.getHours());  
-        const bookingMinutes = Number(booking.date.getMinutes());
+        const bookingHour = Number(booking.date.getHours())  
+        const bookingMinutes = Number(booking.date.getMinutes())
 
-        return bookingHour === timeHour && bookingMinutes === timeMinutes;
-      });
+        return bookingHour === timeHour && bookingMinutes === timeMinutes
+      })
 
-      if (!booking) return true;
+      if (!booking) return true
 
-      return false;
+      return false
     })
-  }, [date, dayBookings]);
+  }, [date, dayBookings])
 
   const handleDateClick = (date: Date | undefined) => {
-    setDate(date);
-    setHour(undefined);
+    setDate(date)
+    setHour(undefined)
   }
 
   const handleHourClick = (time: string) => {
-    setHour(time);
+    setHour(time)
   }
 
   const handleBookingSubmit = async () => {
-    setIsFetching(true);
+    setIsFetching(true)
     try {
-      if (!date || !hour || !session?.user) return;
+      if (!date || !hour || !session?.user) return
 
-      const dateHour = Number(hour.split(':')[0]);
-      const dateMinutes = Number(hour.split(':')[1]);
+      const dateHour = Number(hour.split(':')[0])
+      const dateMinutes = Number(hour.split(':')[1])
 
-      const newDate = setMinutes( setHours(date, dateHour), dateMinutes);
+      const newDate = setMinutes( setHours(date, dateHour), dateMinutes)
 
       await saveBooking({
         barbershopId: barbershop.id,
         serviceId: service.id,
         date: newDate,
         userId,
-      });
+      })
 
-      setSheetIsOpen(false);
-      setHour(undefined);
-      setDate(undefined);
+      setSheetIsOpen(false)
+      setHour(undefined)
+      setDate(undefined)
       toast("Reserva realizada com sucesso!", {
         description: format(newDate, "'Para' dd 'de' MMMM 'às' HH':'mm'.", { locale: ptBR }),
         action: {
           label: "Visualizar",
           onClick: () => router.push("/bookings"),
         },
-      });
+      })
     } catch (error) {
-      console.log(error);
+      console.log(error)
     } finally {
-      setIsFetching(false);
+      setIsFetching(false)
     }
   }
 
   useEffect(() => {
-    if (!date) return;
+    if (!date) return
 
     const refreshAvailableHours = async () => {
-      const bookings = await getDayBookings(barbershop.id, date);
+      const bookings = await getDayBookings(barbershop.id, date)
 
-      setDayBookings(bookings);
+      setDayBookings(bookings)
     }
 
-    refreshAvailableHours();
-  }, [date, barbershop.id]);
+    refreshAvailableHours()
+  }, [date, barbershop.id])
 
   return (
     <Card>
@@ -239,7 +238,7 @@ const ServiceItem = ({ barbershop, service, session, isAuthenticated }: IService
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
 
-export default ServiceItem;
+export default ServiceItem

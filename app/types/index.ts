@@ -1,8 +1,7 @@
-import { Barbershop, Booking, Service } from "@prisma/client";
-import { DefaultUser, Session } from "next-auth";
+import { Barbershop, Booking, Service } from "@prisma/client"
 
-export type BarbershopType = Barbershop;
+export type BarbershopType = Barbershop
 
-export type ServiceType = Service;
+export type ServiceType = Service
 
-export type BookingType = Booking;
+export type BookingType = Booking
